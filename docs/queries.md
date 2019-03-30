@@ -1,23 +1,25 @@
 ---
-title: Queries
-description: Learn how to fetch data with Query components
+标题: Queries
+描述: 学习如何使用 Query 组件获取数据
 ---
 
-Fetching data in a simple, predictable way is one of the core features of Apollo Client. In this guide, you'll learn how to build Query components in order to fetch GraphQL data and attach the result to your UI. You'll also learn how Apollo Client simplifies your data management code by tracking error and loading states for you.
+以简单可预测的方式获取数据是 Apollo Client 的核心功能之一。 在本指南中，您将学习如何构建 Query 组件以获取 GraphQL 数据并将结果附加到 UI。 您还将了解 Apollo Client 如何通过跟踪错误和加载状态来简化数据管理代码。
 
-This page assumes some familiarity with building GraphQL queries. If you'd like a refresher, we recommend [reading this guide](http://graphql.org/learn/queries/) and practicing [running queries in GraphiQL](../features/developer-tooling.html#features). Since Apollo Client queries are just standard GraphQL, you can be sure that any query that successfully runs in GraphiQL will also run in an Apollo Query component.
 
-The following examples assume that you've already set up Apollo Client and have wrapped your React app in an `ApolloProvider` component. Read our [getting started](./get-started.html) guide if you need help with either of those steps.
+假设您熟悉构建 GraphQL 查询。 如果你想复习一下, 我们推荐 [阅读本指南](http://graphql.org/learn/queries/) 和练习 [在GraphiQL中运行查询](../features/developer-tooling.html#features). 由于 Apollo Client 查询是标准的 GraphQL，因此您在 GraphiQL 中成功运行的任何查询也将在 Apollo Query 组件中运行。
 
-> If you'd like to follow along with the examples, open up our [starter project](https://codesandbox.io/s/j2ly83749w) on CodeSandbox and our sample GraphQL server on [this CodeSandbox](https://codesandbox.io/s/32ypr38l61). You can view the completed version of the app [here](https://codesandbox.io/s/n3jykqpxwm).
+以下示例假设您已经设置了 Apollo Client 并将您的 React 应用程序包装在 `ApolloProvider` 组件中。 阅读我们的 [入门](./get-started.html) 指南, 如果您需要有关这两个步骤的帮助。
 
-<h2 id="basic">The Query component</h2>
+> 如果你想参考这些例子，请打开 CodeSandbox 上的 [启动项目](https://codesandbox.io/s/j2ly83749w)和 [this CodeSandbox](https://codesandbox.IO/S/32ypr38l61) 上的示例 GraphQL 服务器。 您可以查看应用程序的 [完整版本](https://codesandbox.io/s/n3jykqpxwm)。
 
-The `Query` component is one of the most important building blocks of your Apollo application. To create a `Query` component, just pass a GraphQL query string wrapped with the `gql` function to `this.props.query` and provide a function to `this.props.children` that tells React what to render. The `Query` component is an example of a React component that uses the [render prop](https://reactjs.org/docs/render-props.html) pattern. React will call the render prop function you provide with an object from Apollo Client containing loading, error, and data properties that you can use to render your UI. Let's look at an example:
+<h2 id="basic">Query组件</h2>
 
-First, let's create our GraphQL query. Remember to wrap your query string in the `gql` function in order to parse it into a query document. Once we have our GraphQL query, let's attach it to our `Query` component by passing it to the `query` prop.
+Query 组件是 Apollo 应用程序最重要的构建块之一。 要创建 Query 组件， 只需将包含 `gql` 函数的 GraphQL 查询字符串传递给 `this.props.query` ，并为 `this.props.children` 提供一个函数，告诉 React 要呈现什么。
+ `Query` 组件是使用 [render prop](https://reactjs.org/docs/render-props.html) 模式的React组件的示例。 React将使用 Apollo Client 中的对象调用您提供的 render prop 函数，该对象包含可用于呈现 UI 的加载，错误和数据属性。 我们来看一个例子：
 
-We also need to provide a function as a child to our `Query` component that will tell React what we want to render. We can use the `loading`, `error`, and `data` properties that the `Query` component provides for us in order to intelligently render different UI depending on the state of our query. Let's see what this looks like!
+首先，让我们创建 GraphQL 查询。 请记住将查询字符串包装在 `gql` 函数中，以便将其解析为查询文档。 一旦我们创建好 GraphQL 查询，让我们通过将它传递给 `query` prop 来将它附加到我们的 `Query` 组件。
+
+我们还需要为 `Query` 组件提供一个子函数，它将告诉 React 我们想要呈现什么。 我们可以使用 `Query` 组件为我们提供的 `loading`，`error` 和 `data` 属性，以便根据查询的状态智能地呈现不同的 UI。 让我们看看这是什么样的！
 
 ```jsx
 import gql from "graphql-tag";
@@ -52,15 +54,15 @@ const Dogs = ({ onDogSelected }) => (
 );
 ```
 
-If you render `Dogs` within your `App` component, you'll first see a loading state and then a form with a list of dog breeds once Apollo Client receives the data from the server. When the form value changes, we're going to send the value to a parent component via `this.props.onDogSelected`, which will eventually pass the value to a `DogPhoto` component.
+如果你在 `App` 组件中渲染 `Dogs`，一旦 Apollo Client 从服务器接收数据，你将首先看到加载状态，然后是带有狗品种列表的表单。 当表单值改变时，我们将通过 `this.props.onDogSelected` 将值发送给父组件， 最终将值传递给 `DogPhoto` 组件。
 
-In the next step, we're going to hook our form up to a more complex query with variables by building a `DogPhoto` component.
+在下一步中，我们将通过构建一个 `DogPhoto` 组件将表单挂载到一个更复杂的变量查询。
 
-<h2 id="data">Receiving data</h2>
+<h2 id="data">接收数据</h2>
 
-You've already seen a preview of how to work with the result of your query in the render prop function. Let's dive deeper into what's happening behind the scenes with Apollo Client when we fetch data from a `Query` component.
+您已经在 render prop 函数中看到了如何处理查询结果。 当我们从 `Query` 组件中获取数据时，让我们深入了解 Apollo Client 幕后发生的事情。
 
-1. When the `Query` component mounts, Apollo Client creates an observable for our query. Our component subscribes to the result of the query via the Apollo Client cache.
+1. 当 `Query` 组件安装时，Apollo Client 会为我们的查询创建一个 observable。 我们的组件通过 Apollo Client 缓存订阅查询结果。
 2. First, we try to load the query result from the Apollo cache. If it's not in there, we send the request to the server.
 3. Once the data comes back, we normalize it and store it in the Apollo cache. Since the `Query` component subscribes to the result, it updates with the data reactively.
 
