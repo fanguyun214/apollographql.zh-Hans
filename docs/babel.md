@@ -1,21 +1,21 @@
 ---
-title: Compiling queries with Babel
+title: 使用 Babel 编译查询
 ---
 
-If you prefer co-locating your GraphQL queries in your Javascript files, you typically use the [graphql-tag](https://github.com/apollographql/graphql-tag) library to write them. That requires to process the query strings into a GraphQL AST, which will add to the startup time of your application, especially if you have many queries.
+如果您希望在 Javascript 文件中协同定位 GraphQL 查询，通常使用 [graphql-tag](https://github.com/apollographql/graphql-tag)库来编写它们。这需要将查询字符串处理为 GraphQL AST，这将增加应用程序的启动时间，特别是如果您有许多查询。
 
-To avoid this runtime overhead, you can precompile your queries created with `graphql-tag` using [Babel](http://babeljs.io/). Here are two ways you can do this:
+为了避免这种运行时开销，您可以预先编译 `graphql-tag` 创建的查询使用 [Babel](http://babeljs.io/). Here are two ways you can do this:
 
-1. Using [babel-plugin-graphql-tag](#using-babel-plugin-graphql-tag)
-2. Using [graphql-tag.macro](#using-graphql-tagmacro)
+1. 使用 [babel-plugin-graphql-tag](#using-babel-plugin-graphql-tag)
+2. 使用 [graphql-tag.macro](#using-graphql-tagmacro)
 
-If you prefer to keep your GraphQL code in separate files (`.graphql` or `.gql`) you can use [babel-plugin-import-graphql](https://github.com/detrohutt/babel-plugin-import-graphql). This plugin still uses `graphql-tag` under the hood, but transparently. You simply `import` your operations/fragments as if each were an export from your GraphQL file. This carries the same precompilation benefits as the above approaches.
+如果您希望将 GraphQL 代码保存在单独的文件中 (`.graphql` or `.gql`) 你可以使用 [babel-plugin-import-graphql](https://github.com/detrohutt/babel-plugin-import-graphql)。 这个插件仍然在引擎下使用 `graphql-tag` ，但是透明的。 您只需导入操作/片段，就好像每个都是从 GraphQL 文件导出一样。 这具有与上述方法相同的预编译益处。
 
-## Using babel-plugin-graphql-tag
+## 使用 babel-plugin-graphql-tag
 
-This approach will allow you to use the `graphql-tag` library as usual, and when processing the files with this babel plugin, the calls to that library will be replaced by the precompiled result.
+这种方法可以像往常一样使用 `graphql-tag` 库，当使用这个 babel 插件处理文件时，对该库的调用将被预编译的结果所取代。
 
-Install the plugin in your dev dependencies:
+在开发依赖项中安装插件：
 
 ```
 # with npm
@@ -25,7 +25,7 @@ npm install --save-dev babel-plugin-graphql-tag
 yarn add --dev babel-plugin-graphql-tag
 ```
 
-Then add the plugin in your `.babelrc` configuration file:
+然后在 `.babelrc` 配置文件中添加插件：
 
 ```
 {
@@ -35,15 +35,15 @@ Then add the plugin in your `.babelrc` configuration file:
 }
 ```
 
-And that's it! All the usages of `import gql from 'graphql-tag'` will be removed, and the calls to `gql` will be replaced by the compiled version.
+就是这样！ 将删除 `graphql-tag` 中的 `import gql` 的所有用法，并且将对编译版本替换对 `gql` 的调用。
 
-## Using graphql-tag.macro
+## 使用 graphql-tag.macro
 
-This approach is a bit more explicit, since you change all your usages of `graphql-tag` for `graphql-tag.macro`, which exports a `gql` function that you can use the same way as the original one. This macro requires the [babel-macros](https://github.com/kentcdodds/babel-macros) plugin, which will do the same as the previous approach but only on the calls that come from the macro import, leaving regular calls to the `graphql-tag` library untouched.
+这种方法更加明确，因为你改变了 `graphql-tag.macro` 的 `graphql-tag` 的所有用法， 它导出一个`gql`函数，你可以使用与原始函数相同的方法。 这个 macro 需要 [babel-macros](https://github.com/kentcdodds/babel-macros) 插件, 这将与前一种方法相同，但仅限于来自 macro 导入的调用，而不会对常规调用`graphql-tag`库进行调用。
 
-Why would you prefer this approach? Mainly because it requires less configuration (`babel-macros` works with all kinds of macros, so if you already had it installed you don't have to do anything else), and also because of the explicitness. You can read more about the rationale of using `babel-macros` [in this blog post](http://babeljs.io/blog/2017/09/11/zero-config-with-babel-macros).
+你为什么喜欢这种方法？ 主要是因为它需要较少的配置 (`babel-macros`适用于所有类型的 macro，所以如果你已经安装它，你不必做任何其他事情)，因为显而易见。 您可以阅读有关使用 `babel-macros`  理由的更多信息 [在这篇博文中](http://babeljs.io/blog/2017/09/11/zero-config-with-babel-macros).
 
-To use it, provided that you [already have babel-macros installed](https://github.com/kentcdodds/babel-macros#installation) and [configured](https://github.com/kentcdodds/babel-macros/blob/master/other/docs/user.md), you just need to change this:
+要使用它，只要你 [已经安装了 babel-macros](https://github.com/kentcdodds/babel-macros#installation) 和 [configured](https://github.com/kentcdodds/babel-macros/blob/master/other/docs/user.md), 你只需要修改这些：
 
 ```js
 import gql from 'graphql-tag';
@@ -57,7 +57,7 @@ const query = gql`
 `;
 ```
 
-to this:
+对应:
 
 ```js
 import gql from 'graphql-tag.macro'; // <-- Use the macro
@@ -71,9 +71,9 @@ const query = gql`
 `;
 ```
 
-## Using babel-plugin-import-graphql
+## 使用 babel-plugin-import-graphql
 
-Install the plugin in your dev dependencies:
+在开发依赖项中安装插件：
 
 ```
 # with npm
@@ -83,7 +83,7 @@ npm install --save-dev babel-plugin-import-graphql
 yarn add --dev babel-plugin-import-graphql
 ```
 
-Then add the plugin in your `.babelrc` configuration file:
+然后在 `.babelrc` 配置文件中添加插件：
 
 ```
 {
@@ -93,7 +93,7 @@ Then add the plugin in your `.babelrc` configuration file:
 }
 ```
 
-Now any `import` statements importing from a GraphQL file type will return a ready-to-use GraphQL DocumentNode object.
+现在，从 GraphQL 文件类型导入的任何 `import` 语句都将返回一个可立即使用的 GraphQL DocumentNode 对象。
 
 ```javascript
 import React, { Component } from 'react';
@@ -114,9 +114,9 @@ export default graphql(myImportedQuery)(QueryingComponent);
 
 ## Fragments
 
-All of these approaches support the use of fragments.
+有这些方法都支持 Fragments 的使用。
 
-For the first two approaches, you can have fragments defined in a different call to `gql` (either in the same file or in a different one). You can then include them into the main query using interpolation, like this:
+对于前两种方法，您可以在对 `gql` 的不同调用中定义 Fragments（在同一文件中或在不同文件中）。 然后，您可以使用插值将它们包含到主查询中，如下所示：
 
 ```js
 import gql from 'graphql-tag';
@@ -143,4 +143,4 @@ const query = gql`
 `;
 ```
 
-With `babel-plugin-import-graphql`, you can just include your fragment in your GraphQL file along-side whatever uses it, or even import it from a separate file using the `#import` syntax. See the [README](https://github.com/detrohutt/babel-plugin-import-graphql) for more information.
+使用 `babel-plugin-import-graphql`，您可以将您的 Fragments 包含在 GraphQL 文件中，无论使用它还是什么，甚至可以使用 `#import` 语法从单独的文件中导入它。 更多信息见 [README](https://github.com/detrohutt/babel-plugin-import-graphql) 
