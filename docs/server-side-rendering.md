@@ -1,20 +1,20 @@
 ---
-title: Server-side rendering
+title: SSR(Server-side rendering) 服务端渲染
 ---
 
 
-Apollo provides two techniques to allow your applications to load quickly, avoiding unnecessary delays to users:
+Apollo 提供了两种方式，可以让您的应用程序快速加载，避免不必要的用户延迟：
 
- - Store rehydration, which allows your initial set of queries to return data immediately without a server roundtrip.
- - Server side rendering, which renders the initial HTML view on the server before sending it to the client.
+ - Store rehydration，允许您的初始查询集立即返回数据而无需服务器往返。
+ - Server side rendering, 在将服务器发送到客户端之前，它会在服务器上渲染初始 HTML 视图。
 
-You can use one or both of these techniques to provide a better user experience.
+您可以使用这些技术中的一种或两种来提供更好的用户体验。
 
 <h2 id="store-rehydration">Store rehydration</h2>
 
-For applications that can perform some queries on the server prior to rendering the UI on the client, Apollo allows for setting the initial state of data. This is sometimes called rehydration, since the data is "dehydrated" when it is serialized and included in the initial HTML payload.
+对于可以在客户端上呈现 UI 之前在服务器上执行某些查询的应用程序，Apollo 允许设置数据的初始状态。 这有时称为 rehydration，因为数据在序列化并包含在初始 HTML 有效负载中时会 “rehydration”。
 
-For example, a typical approach is to include a script tag that looks something like:
+例如，一种典型的方法是包含一个类似于以下内容的脚本标记：
 
 ```html
 <script>
@@ -22,7 +22,7 @@ For example, a typical approach is to include a script tag that looks something 
 </script>
 ```
 
-You can then rehydrate the client using the initial state passed from the server:
+然后，您可以使用从服务器传递的初始状态来重新 rehydration 客户端：
 ```js
 const client = new ApolloClient({
   cache: new InMemoryCache().restore(window.__APOLLO_STATE__),
@@ -30,11 +30,11 @@ const client = new ApolloClient({
 });
 ```
 
-We'll see below how you can generate both the HTML and the Apollo store's state using Node and `react-apollo`'s server rendering functions. However if you are rendering HTML via some other means, you will have to generate the state manually.
+我们将在下面看到如何使用 Node 和 `react-apollo` 的服务器渲染功能生成 HTML 和 Apollo 存储的状态。 但是，如果您通过其他方式呈现 HTML，则必须手动生成状态。
 
-Then, when the client runs the first set of queries, the data will be returned instantly because it is already in the store!
+然后，当客户端运行第一组查询时，数据将立即返回，因为它已经存储在 store 中！
 
-If you are using `fetchPolicy: network-only` or `fetchPolicy: cache-and-network` on some of the initial queries, you can pass the `ssrForceFetchDelay` option to skip force fetching during initialization, so that even those queries run using the cache:
+如果在某些初始查询中使用 `fetchPolicy：network-only` 或 `fetchPolicy：cache-and-network`，则可以传递 `ssrForceFetchDelay` 选项以在初始化期间跳过强制获取，这样即使这些查询也可以使用缓存：
 
 ```js
 const client = new ApolloClient({
