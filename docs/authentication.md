@@ -1,14 +1,15 @@
 ---
-title: Authentication
+title: 认证
 ---
 
-Unless all of the data you are loading is completely public, your app has some sort of users, accounts and permissions systems. If different users have different permissions in your application, then you need a way to tell the server which user is associated with each request.
+除非您加载的所有数据都是完全公开的，否则您的应用程序应该拥有用户，帐户和权限系统。 如果不同的用户在您的应用程序中具有不同的权限，那么您需要一种方法来告诉服务器哪个用户与每个请求相关联。
 
-Apollo Client uses the ultra flexible [Apollo Link](/docs/link) that includes several options for authentication.
+Apollo客户端使用超灵活的 [Apollo Link](/docs/link)，其中包括几个身份验证选项。
+
 
 ## Cookie
 
-If your app is browser based and you are using cookies for login and session management with a backend, it's very easy to tell your network interface to send the cookie along with every request. You just need to pass the credentials option. e.g.  `credentials: 'same-origin'` as shown below, if your backend server is the same domain or else `credentials: 'include'` if your backend is a different domain.
+如果您的应用程序是基于浏览器的，并且您使用 cookie 进行后端登录和会话管理，则很容易告诉您的网络接口，发送 cookie 到每个请求。 您只需要传递凭证选项。 例如 `credentials：'same-origin'` 如果你的后端服务器是同一个域，或者如果你的后端是一个不同的域，则为 `credentials：'include'`。
 
 ```js
 const link = createHttpLink({
@@ -22,9 +23,9 @@ const client = new ApolloClient({
 });
 ```
 
-This option is simply passed through to the [`fetch` implementation](https://github.com/github/fetch) used by the HttpLink when sending the query.
+这个选项简单地传递给 HttpLink 在发送查询时使用的 [`fetch` implementation](https://github.com/github/fetch)
 
-Note: the backend must also allow credentials from the requested origin. e.g. if using the popular 'cors' package from npm in node.js, the following settings would work in tandem with the above apollo client settings,
+注意：后端还必须允许来自请求来源的凭据。 例如 如果在 node.js 中使用来自 npm 的流行 'cors' 包，则以下设置将与上述 apollo 客户端设置协同工作，
 ```js
 // enable cors
 var corsOptions = {
@@ -35,7 +36,7 @@ app.use(cors(corsOptions));
 ```
 ## Header
 
-Another common way to identify yourself when using HTTP is to send along an authorization header. It's easy to add an `authorization` header to every HTTP request by chaining together Apollo Links. In this example, we'll pull the login token from `localStorage` every time a request is sent:
+使用 HTTP 时识别自己的另一种常用方法是基于 header 发送认证。通过将 Apollo Links 结合在一起，可以轻松地为每个 HTTP 请求添加一个 `authorization` 标头。 在这个例子中，每次发送请求时我们都会从 `localStorage` 中提取登录令牌：
 
 ```js
 import { ApolloClient } from 'apollo-client';
@@ -65,15 +66,15 @@ const client = new ApolloClient({
 });
 ```
 
-Note that the above example is using `ApolloClient` from the `apollo-client` package. Headers can still be modified using `ApolloClient` from the `apollo-boost` package, but since `apollo-boost` doesn't allow the `HttpLink` instance it uses to be modified, headers have to be passed in as a config parameter. See the Apollo Boost [Configuration options](../essentials/get-started.html#configuration) section for more details.
+请注意，上面的示例使用了 `apollo-client` 包中的 `ApolloClient`。 虽然可以使用 `apollo-boost` 包中的 `ApolloClient` 修改 Headers，但由于 `apollo-boost` 不允许修改它所使用的 `HttpLink` 实例，所以 Headers 必须作为配置参数传入。 有关详细信息，请参阅 Apollo Boost [配置选项](../essentials/get-started.html#configuration) 部分。
 
-The server can use that header to authenticate the user and attach it to the GraphQL execution context, so resolvers can modify their behavior based on a user's role and permissions.
+服务器可以使用 header 信息对用户进行身份验证并将其附加到 GraphQL 执行上下文，因此解析器可以根据用户的角色和权限修改其行为。
 
-<h2 id="login-logout">Reset store on logout</h2>
+<h2 id="login-logout">注销时重置存储</h2>
 
-Since Apollo caches all of your query results, it's important to get rid of them when the login state changes.
+由于 Apollo 会缓存您的所有查询结果，因此在登录状态更改时删除它们非常重要。
 
-The easiest way to ensure that the UI and store state reflects the current user's permissions is to call `client.resetStore()` after your login or logout process has completed. This will cause the store to be cleared and all active queries to be refetched. If you just want the store to be cleared and don't want to refetch active queries, use `client.clearStore()` instead. Another option is to reload the page, which will have a similar effect.
+确保 UI 和存储状态反映的是当前用户权限的最简单方法是在登录或注销过程完成后调用 `client.resetStore()`。 这将导致清除存储并重新获取所有查询。 如果您只想清除存储并且不想重新获取查询，请使用 `client.clearStore()`。 另一种选择是重新加载页面，产生类似的效果。
 
 
 ```js
